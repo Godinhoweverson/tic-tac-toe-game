@@ -1,0 +1,28 @@
+footer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    height: 72px;
+}
+
+.subBoxes-score{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 140px;
+    height: 100%;
+    border-radius: 15px;
+}
+
+.subBoxes-score p{
+    color: var(--dark-navy);
+}
+
+.subBoxes-score span{
+    font-size: var(--heading-medium);
+    color: var(--dark-navy);
+    font-weight: bold;
+}
