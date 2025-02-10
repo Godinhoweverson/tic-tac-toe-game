@@ -3,7 +3,8 @@ import iconx from '../../assets/images/icon-x-navy.svg';
 import iconXSilver from '../../assets/images/icon-x-silver.svg';
 import iconO from '../../assets/images/icon-o.svg';
 import iconOSilver from '../../assets/images/icon-o-silver.svg';
-import { useState } from 'react';
+
+import { useState} from 'react';
 import { Link } from 'react-router-dom';
 
 export default function InitialGame(){
@@ -20,6 +21,7 @@ function handleClickOmark(){
     setPickMarkO('active-initialGame')
     setPickMarkX('desactive-intialGame');
 }
+let mark = pickMarkX === 'active-initialGame' ? 0 : 1;
     return(
         <div className="box-initialGame">
             <nav className="nav-initialGame">
@@ -40,8 +42,16 @@ function handleClickOmark(){
                 <p>REMEMBER : X GOES FIRST</p>
             </section>
             <div className="newGame-initalGame">
-                <button className='cpu'><Link to="/gameStart">NEW GAME (VS CPU)</Link></button>
-                <button className='player'><Link to="/gameStart">NEW GAME  (VS PLAYER)</Link></button>
+                <button className='cpu'>
+                    <Link to= {`/gameStart?mark=${mark}`}>
+                        NEW GAME (VS CPU)
+                    </Link>
+                </button>
+                <button className='player'>
+                    <Link to={`/gameStart?mark=${mark}`}>
+                    NEW GAME  (VS PLAYER)
+                    </Link>
+                </button>
             </div>
         </div>
     )

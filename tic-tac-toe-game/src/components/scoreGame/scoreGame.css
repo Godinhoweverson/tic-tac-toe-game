@@ -26,3 +26,9 @@ footer{
     color: var(--dark-navy);
     font-weight: bold;
 }
+
+@media screen and (max-width:480px) {
+    .subBoxes-score{
+        width: 96px;
+    }
+}

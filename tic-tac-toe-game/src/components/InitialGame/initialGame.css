@@ -102,3 +102,7 @@
 .cpu:hover{
     background-color: var(--ligth-yellow-hover);
 }
+
+.cpu a:hover, .player a:hover{
+    color: var(--dark-navy);
+}
