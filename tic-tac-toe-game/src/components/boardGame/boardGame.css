@@ -10,8 +10,8 @@
 
 .row-BoardGame{
     display: grid;
-    grid-template-columns: auto auto auto;
-    grid-template-rows: auto;
+    grid-template-columns: 140px 140px 140px;
+    grid-template-rows: 140px;
     gap: 1.25rem;
 }
 

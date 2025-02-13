@@ -6,6 +6,7 @@ import './components/InitialGame/initialGame.css'
 import './components/gameStart/gameStart.css'
 import './components/boardGame/boardGame.css'
 import './components/scoreGame/scoreGame.css'
+import './components/winner/winner.css'
 
 import { BrowserRouter } from "react-router";
 
