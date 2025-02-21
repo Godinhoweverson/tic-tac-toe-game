@@ -33,6 +33,7 @@ export default function BoardGame ({mark}){
     const [square, setSquare] = useState(INITIAL_BOARD);
     const [result, setResult] = useState({});
     const [winner, setWinner] = useState(null);
+    const [resetGame, setResetGame] = useState(false);
 
     function handleCurrentPlayer (){
         currentPlayer === PLAYER1 ? setCurrentPlayer(PLAYER2) : setCurrentPlayer(PLAYER1);
@@ -40,9 +41,7 @@ export default function BoardGame ({mark}){
     };
     
     function handleChoice (row, col){
-
         let gameBoard = [...square.map(array => [...array])];
-
         if(!gameBoard[row][col]){
             let current = handleCurrentPlayer();
             gameBoard[row][col] = <img src={current === 0 ? iconx : iconO} alt="mark" className={current}/> 
@@ -61,7 +60,6 @@ export default function BoardGame ({mark}){
 
 
     function checkWinner(sequence){
-
         const resultMatch = RESULT_MATCH.some(match =>
               Object.keys(match).every(key=>match[key] === sequence[key])
           );
@@ -74,8 +72,16 @@ export default function BoardGame ({mark}){
             return 2;
         };
     };
-
+    
     const winnerResult = checkWinner(result);
+    console.log(winnerResult)
+    function handleNextRound(){
+        setCurrentPlayer(PLAYER1);
+        setSquare(INITIAL_BOARD);
+        setWinner(null);
+        setResetGame(true);
+        setResult({});
+    }
 
     return(
         <>
@@ -103,7 +109,9 @@ export default function BoardGame ({mark}){
             </section>
              <ScoreGame winner={winnerResult && winnerResult !== 2 ? winner : winnerResult === 2 ? 2 : null}/>
             {winnerResult !== 2 && winnerResult ?
-                                 <Winner winner={winner}/> : winnerResult === 2 ? <Winner winner={2}/> : null}
+                                 <Winner winner={winner} onClick={handleNextRound} resetGame={resetGame}/> :
+                                  winnerResult === 2 ?
+                                 <Winner winner={2} onClick={handleNextRound} resetGame={resetGame}/> : null}
         </>
     )
 }
