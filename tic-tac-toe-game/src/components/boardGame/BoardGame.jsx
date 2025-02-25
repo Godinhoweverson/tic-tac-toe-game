@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 //COMPONENTS
 import Winner from "../winner/Winner.jsx";
 import ScoreGame from '../scoreGame/ScoreGame.jsx';
@@ -15,7 +14,7 @@ import iconXSilver from '../../assets/images/icon-x-silver.svg';
 import iconOSilver from '../../assets/images/icon-o-silver.svg';
 import iconRestart from '../../assets/images/icon-restart.svg';
 
-export default function BoardGame ({mark}){
+export default function BoardGame (){
     const INITIAL_BOARD = [
         [null,null,null],
         [null,null,null],
@@ -34,6 +33,7 @@ export default function BoardGame ({mark}){
     const [result, setResult] = useState({});
     const [winner, setWinner] = useState(null);
     const [resetGame, setResetGame] = useState(false);
+    const [nextRound, setNextRound] = useState(false);
 
     function handleCurrentPlayer (){
         currentPlayer === PLAYER1 ? setCurrentPlayer(PLAYER2) : setCurrentPlayer(PLAYER1);
@@ -41,12 +41,13 @@ export default function BoardGame ({mark}){
     };
     
     function handleChoice (row, col){
-        let gameBoard = [...square.map(array => [...array])];
+        setNextRound(false);
+        let gameBoard = null;
+        gameBoard = [...square.map(array => [...array])];
         if(!gameBoard[row][col]){
             let current = handleCurrentPlayer();
             gameBoard[row][col] = <img src={current === 0 ? iconx : iconO} alt="mark" className={current}/> 
         }
-
         setSquare(gameBoard)
 
         if(gameBoard[row][col] !== null){
@@ -58,13 +59,14 @@ export default function BoardGame ({mark}){
         setWinner(gameBoard[row][col].props.className);
     };
 
-
     function checkWinner(sequence){
-        const resultMatch = RESULT_MATCH.some(match =>
+        let resultMatch = null;
+        resultMatch = RESULT_MATCH.some(match =>
               Object.keys(match).every(key=>match[key] === sequence[key])
           );
 
-          let draw = square.every(row => row.every(item => item !== null));
+          let draw = null;
+          draw = square.every(row => row.every(item => item !== null));
 
         if(resultMatch){
             return resultMatch;
@@ -73,14 +75,23 @@ export default function BoardGame ({mark}){
         };
     };
     
-    const winnerResult = checkWinner(result);
-    console.log(winnerResult)
+    let winnerResult = null;
+    winnerResult = checkWinner(result);
+
     function handleNextRound(){
-        setCurrentPlayer(PLAYER1);
+        setNextRound(true);
         setSquare(INITIAL_BOARD);
-        setWinner(null);
-        setResetGame(true);
+        setCurrentPlayer(PLAYER1);
         setResult({});
+        setWinner(null);
+    }
+
+    function handleRestartGame(){
+        setResetGame(true);
+        setSquare(INITIAL_BOARD);
+        setCurrentPlayer(PLAYER1);
+        setResult({});
+        setWinner(null);
     }
 
     return(
@@ -93,7 +104,7 @@ export default function BoardGame ({mark}){
                         <img src={currentPlayer === 0 ? iconXSilver : iconOSilver } alt="current player"/> TURN
                     </button>
                     <button className='resetGame-GameStart'>
-                        <img src={iconRestart} alt='Restart game'/>
+                        <img src={iconRestart} alt='Restart game' onClick={handleRestartGame}/>
                     </button>  
             </section>
             <section className="boardgame-BoardGame">
@@ -107,11 +118,11 @@ export default function BoardGame ({mark}){
                     </div>
                 ))}                          
             </section>
-             <ScoreGame winner={winnerResult && winnerResult !== 2 ? winner : winnerResult === 2 ? 2 : null}/>
+             <ScoreGame winner={winnerResult && winnerResult !== 2 ? winner : winnerResult === 2 ? 2 : null} resetGame={resetGame}/>
             {winnerResult !== 2 && winnerResult ?
-                                 <Winner winner={winner} onClick={handleNextRound} resetGame={resetGame}/> :
+                                 <Winner winner={winner} onClick={handleNextRound} nextRound={nextRound}/> :
                                   winnerResult === 2 ?
-                                 <Winner winner={2} onClick={handleNextRound} resetGame={resetGame}/> : null}
+                                 <Winner winner={2} onClick={handleNextRound} nextRound={nextRound}/> : null}
         </>
     )
 }
