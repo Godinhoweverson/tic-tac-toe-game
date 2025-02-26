@@ -14,7 +14,7 @@ import iconXSilver from '../../assets/images/icon-x-silver.svg';
 import iconOSilver from '../../assets/images/icon-o-silver.svg';
 import iconRestart from '../../assets/images/icon-restart.svg';
 
-export default function BoardGame (){
+export default function BoardGame (mark, gameSelect){
     const INITIAL_BOARD = [
         [null,null,null],
         [null,null,null],
@@ -26,9 +26,16 @@ export default function BoardGame (){
         ['bottomLeft','bottomMiddle','bottomRight']
     ];
     
-    const PLAYER1 = 0;
-    const PLAYER2 = 1;
-    const [currentPlayer, setCurrentPlayer] = useState(PLAYER1)
+
+    let PLAYER1;
+    let PLAYER2;
+    console.log(mark, gameSelect)
+    if(gameSelect === 'MultiPlayer'){
+        PLAYER1 = mark;
+        PLAYER2 = mark === 0 ? 1 : 0
+    }
+  
+    const [currentPlayer, setCurrentPlayer] = useState(0)
     const [square, setSquare] = useState(INITIAL_BOARD);
     const [result, setResult] = useState({});
     const [winner, setWinner] = useState(null);
@@ -36,12 +43,13 @@ export default function BoardGame (){
     const [nextRound, setNextRound] = useState(false);
 
     function handleCurrentPlayer (){
-        currentPlayer === PLAYER1 ? setCurrentPlayer(PLAYER2) : setCurrentPlayer(PLAYER1);
+        currentPlayer === 0 ? PLAYER2 === 1 ? setCurrentPlayer(PLAYER2) : setCurrentPlayer(PLAYER1) : setCurrentPlayer(PLAYER1);
         return currentPlayer;
     };
     
     function handleChoice (row, col){
         setNextRound(false);
+        setResetGame(false);
         let gameBoard = null;
         gameBoard = [...square.map(array => [...array])];
         if(!gameBoard[row][col]){
@@ -103,8 +111,8 @@ export default function BoardGame (){
                     <button className='btn-turn-GameStart'>
                         <img src={currentPlayer === 0 ? iconXSilver : iconOSilver } alt="current player"/> TURN
                     </button>
-                    <button className='resetGame-GameStart'>
-                        <img src={iconRestart} alt='Restart game' onClick={handleRestartGame}/>
+                    <button className='resetGame-GameStart' onClick={handleRestartGame}>
+                        <img src={iconRestart} alt='Restart game'/>
                     </button>  
             </section>
             <section className="boardgame-BoardGame">
@@ -112,6 +120,7 @@ export default function BoardGame (){
                     <div key={rowIndex} className="row-BoardGame">
                         {row.map((col, colIndex) =>(
                             <div key={colIndex} className="cell-BoardGame" onClick={() => handleChoice(rowIndex, colIndex)}>
+                            {/* <div key={colIndex} className="cell-BoardGame" onClick={() => handleChoice(0, 2)}> */}
                                 {square[rowIndex][colIndex]}
                             </div>
                         ))}

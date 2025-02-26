@@ -43,12 +43,12 @@ let mark = pickMarkX === 'active-initialGame' ? 0 : 1;
             </section>
             <div className="newGame-initalGame">
                 <button className='cpu'>
-                    <Link to= {`/gameStart?mark=${mark}`}>
+                    <Link to= {`/gameStart?markCpu=${mark}`}>
                         NEW GAME (VS CPU)
                     </Link>
                 </button>
                 <button className='player'>
-                    <Link to={`/gameStart?mark=${mark}`}>
+                    <Link to={`/gameStart?markMultiPlayer=${mark}`}>
                     NEW GAME  (VS PLAYER)
                     </Link>
                 </button>

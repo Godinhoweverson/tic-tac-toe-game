@@ -6,12 +6,13 @@ export default function GameStart(){
     const location = useLocation();
    
     const queryParams = new URLSearchParams(location.search)
-    const mark = queryParams.get('mark')  || 'yes';
-
+    const markCpu = queryParams.get('markCpu')  || null;
+    const markMultiPlayer = queryParams.get('markMultiPlayer')  || null;
+    
     return(
         <>
             <main className='container-GameStart'>
-                <BoardGame mark={mark}/>
+                <BoardGame mark={markCpu ? markCpu : markMultiPlayer} gameSelect={markCpu ? 'cpu' : 'MultiPlayer'}/>
             </main>
         </>
        
