@@ -14,38 +14,42 @@ import iconXSilver from '../../assets/images/icon-x-silver.svg';
 import iconOSilver from '../../assets/images/icon-o-silver.svg';
 import iconRestart from '../../assets/images/icon-restart.svg';
 
-export default function BoardGame (mark, gameSelect){
-    const INITIAL_BOARD = [
-        [null,null,null],
-        [null,null,null],
-        [null,null,null]
-    ];
-    const SETUP_DATA = [
-        ['topLeft','topMiddle','topRight'],
-        ['centerLeft','centerMiddle','centerRight'],
-        ['bottomLeft','bottomMiddle','bottomRight']
-    ];
-    
+const INITIAL_BOARD = [
+    [null,null,null],
+    [null,null,null],
+    [null,null,null]
+];
+const SETUP_DATA = [
+    ['topLeft','topMiddle','topRight'],
+    ['centerLeft','centerMiddle','centerRight'],
+    ['bottomLeft','bottomMiddle','bottomRight']
+];
 
-    let PLAYER1;
-    let PLAYER2;
-    console.log(mark, gameSelect)
-    if(gameSelect === 'MultiPlayer'){
-        PLAYER1 = mark;
-        PLAYER2 = mark === 0 ? 1 : 0
-    }
-  
+export default function BoardGame (mark, gameSelect){
     const [currentPlayer, setCurrentPlayer] = useState(0)
     const [square, setSquare] = useState(INITIAL_BOARD);
+    const [row, setRow] = useState();
+    const [col, setCol] = useState();
     const [result, setResult] = useState({});
     const [winner, setWinner] = useState(null);
     const [resetGame, setResetGame] = useState(false);
     const [nextRound, setNextRound] = useState(false);
 
-    function handleCurrentPlayer (){
-        currentPlayer === 0 ? PLAYER2 === 1 ? setCurrentPlayer(PLAYER2) : setCurrentPlayer(PLAYER1) : setCurrentPlayer(PLAYER1);
+    let PLAYER1 = Number(mark.mark);
+    // let PLAYER2 = PLAYER1 === 0 ? 1 : 0;
+   console.log(gameSelect)
+    function handleCurrentPlayer (){ 
+        currentPlayer === 0 ? setCurrentPlayer(1) : setCurrentPlayer(0);
         return currentPlayer;
     };
+
+    function handleCpuChoice(){
+        setRow(Math.random() * 2);
+        setCol(Math.random() * 2);
+
+        console.log(row, col)
+        return row, col
+    }
     
     function handleChoice (row, col){
         setNextRound(false);
@@ -53,7 +57,7 @@ export default function BoardGame (mark, gameSelect){
         let gameBoard = null;
         gameBoard = [...square.map(array => [...array])];
         if(!gameBoard[row][col]){
-            let current = handleCurrentPlayer();
+            let current = handleCurrentPlayer(mark);
             gameBoard[row][col] = <img src={current === 0 ? iconx : iconO} alt="mark" className={current}/> 
         }
         setSquare(gameBoard)
@@ -89,7 +93,7 @@ export default function BoardGame (mark, gameSelect){
     function handleNextRound(){
         setNextRound(true);
         setSquare(INITIAL_BOARD);
-        setCurrentPlayer(PLAYER1);
+        setCurrentPlayer(0);
         setResult({});
         setWinner(null);
     }
@@ -97,7 +101,7 @@ export default function BoardGame (mark, gameSelect){
     function handleRestartGame(){
         setResetGame(true);
         setSquare(INITIAL_BOARD);
-        setCurrentPlayer(PLAYER1);
+        setCurrentPlayer(0);
         setResult({});
         setWinner(null);
     }
@@ -119,7 +123,8 @@ export default function BoardGame (mark, gameSelect){
                 {INITIAL_BOARD.map((row, rowIndex) =>(
                     <div key={rowIndex} className="row-BoardGame">
                         {row.map((col, colIndex) =>(
-                            <div key={colIndex} className="cell-BoardGame" onClick={() => handleChoice(rowIndex, colIndex)}>
+                            <div key={colIndex} className="cell-BoardGame" onClick={() => 
+                                handleChoice(rowIndex, colIndex)}>
                             {/* <div key={colIndex} className="cell-BoardGame" onClick={() => handleChoice(0, 2)}> */}
                                 {square[rowIndex][colIndex]}
                             </div>
@@ -129,9 +134,9 @@ export default function BoardGame (mark, gameSelect){
             </section>
              <ScoreGame winner={winnerResult && winnerResult !== 2 ? winner : winnerResult === 2 ? 2 : null} resetGame={resetGame}/>
             {winnerResult !== 2 && winnerResult ?
-                                 <Winner winner={winner} onClick={handleNextRound} nextRound={nextRound}/> :
+                                 <Winner winner={winner} onClick={handleNextRound} nextRound={nextRound} playerChoice={PLAYER1}/> :
                                   winnerResult === 2 ?
-                                 <Winner winner={2} onClick={handleNextRound} nextRound={nextRound}/> : null}
+                                 <Winner winner={2} onClick={handleNextRound} nextRound={nextRound} playerChoice={PLAYER1}/> : null}
         </>
     )
 }
