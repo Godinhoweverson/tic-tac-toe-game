@@ -25,11 +25,9 @@ const SETUP_DATA = [
     ['bottomLeft','bottomMiddle','bottomRight']
 ];
 
-export default function BoardGame (mark, gameSelect){
+export default function BoardGame ({mark, gameSelect}){
     const [currentPlayer, setCurrentPlayer] = useState(0)
     const [square, setSquare] = useState(INITIAL_BOARD);
-    const [row, setRow] = useState();
-    const [col, setCol] = useState();
     const [result, setResult] = useState({});
     const [winner, setWinner] = useState(null);
     const [resetGame, setResetGame] = useState(false);
@@ -37,27 +35,37 @@ export default function BoardGame (mark, gameSelect){
 
     let PLAYER1 = Number(mark.mark);
     // let PLAYER2 = PLAYER1 === 0 ? 1 : 0;
-   console.log(gameSelect)
+  
     function handleCurrentPlayer (){ 
-        currentPlayer === 0 ? setCurrentPlayer(1) : setCurrentPlayer(0);
-        return currentPlayer;
+        return setCurrentPlayer(prev => prev === 0 ? 1 : 0)
     };
 
-    function handleCpuChoice(){
-        setRow(Math.random() * 2);
-        setCol(Math.random() * 2);
-
-        console.log(row, col)
-        return row, col
-    }
-    
-    function handleChoice (row, col){
+    function handleChoice (rowIndex, colIndex){
         setNextRound(false);
         setResetGame(false);
+       
+        let row = rowIndex;
+        let col = colIndex;
+        if(gameSelect === 'markCpu'){
+            setTimeout(function(){
+                row = Math.floor(Math.random() * 3);
+                col = Math.floor(Math.random() * 3);
+                handlePlayertime(row, col)
+            },1000)
+          
+        }     
+            handlePlayertime(row, col)
+ 
+    };
+
+    
+    function handlePlayertime(row, col){
         let gameBoard = null;
+        console.log(currentPlayer)
+        let current = currentPlayer;
+        
         gameBoard = [...square.map(array => [...array])];
         if(!gameBoard[row][col]){
-            let current = handleCurrentPlayer(mark);
             gameBoard[row][col] = <img src={current === 0 ? iconx : iconO} alt="mark" className={current}/> 
         }
         setSquare(gameBoard)
@@ -69,7 +77,10 @@ export default function BoardGame (mark, gameSelect){
           }));
         };
         setWinner(gameBoard[row][col].props.className);
-    };
+        handleCurrentPlayer()
+    }
+
+    
 
     function checkWinner(sequence){
         let resultMatch = null;
@@ -123,8 +134,7 @@ export default function BoardGame (mark, gameSelect){
                 {INITIAL_BOARD.map((row, rowIndex) =>(
                     <div key={rowIndex} className="row-BoardGame">
                         {row.map((col, colIndex) =>(
-                            <div key={colIndex} className="cell-BoardGame" onClick={() => 
-                                handleChoice(rowIndex, colIndex)}>
+                            <div key={colIndex} className="cell-BoardGame" onClick={() =>  handleChoice(rowIndex, colIndex)}>
                             {/* <div key={colIndex} className="cell-BoardGame" onClick={() => handleChoice(0, 2)}> */}
                                 {square[rowIndex][colIndex]}
                             </div>

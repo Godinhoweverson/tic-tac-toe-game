@@ -12,7 +12,7 @@ export default function GameStart(){
     return(
         <>
             <main className='container-GameStart'>
-                <BoardGame mark={markCpu ? markCpu : markMultiPlayer} gameSelect={'MultiPlayer'}/>
+                <BoardGame mark={markCpu ? markCpu : markMultiPlayer} gameSelect={markCpu &&'markCpu'}/>
             </main>
         </>
        
