@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 //COMPONENTS
 import Winner from "../winner/Winner.jsx";
 import ScoreGame from '../scoreGame/ScoreGame.jsx';
@@ -33,36 +33,22 @@ export default function BoardGame ({mark, gameSelect}){
     const [resetGame, setResetGame] = useState(false);
     const [nextRound, setNextRound] = useState(false);
 
+    const timeOutRef = useRef();
+
     let PLAYER1 = Number(mark.mark);
-    // let PLAYER2 = PLAYER1 === 0 ? 1 : 0;
   
     function handleCurrentPlayer (){ 
-        return setCurrentPlayer(prev => prev === 0 ? 1 : 0)
-    };
+        setCurrentPlayer(prev => prev === 0 ? 1 : 0)
+        return currentPlayer;
+    }; 
 
-    function handleChoice (rowIndex, colIndex){
+    function handleChoice(row, col){
         setNextRound(false);
         setResetGame(false);
-       
-        let row = rowIndex;
-        let col = colIndex;
-        if(gameSelect === 'markCpu'){
-            setTimeout(function(){
-                row = Math.floor(Math.random() * 3);
-                col = Math.floor(Math.random() * 3);
-                handlePlayertime(row, col)
-            },1000)
-          
-        }     
-            handlePlayertime(row, col)
- 
-    };
 
-    
-    function handlePlayertime(row, col){
         let gameBoard = null;
-        console.log(currentPlayer)
-        let current = currentPlayer;
+   
+        let current = handleCurrentPlayer();
         
         gameBoard = [...square.map(array => [...array])];
         if(!gameBoard[row][col]){
@@ -77,10 +63,52 @@ export default function BoardGame ({mark, gameSelect}){
           }));
         };
         setWinner(gameBoard[row][col].props.className);
-        handleCurrentPlayer()
     }
 
+    function handleAiPlayer(row, col) {
+        setSquare((prevSquare) => {
+            let gameBoard = [...prevSquare];
+            gameBoard[row][col] = <img src={iconx} alt="mark" className="0" />; // Ensure className is a string
+            return gameBoard;
+        });
     
+        // Ensure we check winner *after* updating state
+        setSquare((prevSquare) => {
+            const classNameValue = prevSquare[row][col]?.props?.className; // Access className safely
+    
+            if (prevSquare[row][col] !== null) {
+                setResult((prevResult) => ({
+                    ...prevResult,
+                    [SETUP_DATA[row][col]]: classNameValue, // Store className value
+                }));
+            }
+    
+            setWinner(classNameValue); // Store winner
+    
+            return prevSquare; // Maintain state
+        });
+    
+        if (gameSelect !== null) {
+            timeOutRef.current = setTimeout(() => {
+                setSquare((prevSquare) => {
+                    let gameBoardCpu = [...prevSquare];
+    
+                    let rowCpu, colCpu;
+                    do {
+                        rowCpu = Math.floor(Math.random() * 3);
+                        colCpu = Math.floor(Math.random() * 3);
+                    } while (gameBoardCpu[rowCpu][colCpu] !== null);
+    
+                    gameBoardCpu[rowCpu][colCpu] = <img src={iconO} alt="mark" className="1" />;
+                    return gameBoardCpu;
+                });
+            }, 2000);
+        }
+    }
+
+    function stopSetTimeOut(){
+        clearTimeout(timeOutRef.current)
+    }
 
     function checkWinner(sequence){
         let resultMatch = null;
@@ -92,12 +120,14 @@ export default function BoardGame ({mark, gameSelect}){
           draw = square.every(row => row.every(item => item !== null));
 
         if(resultMatch){
+            stopSetTimeOut();
             return resultMatch;
         }else if(draw){
+            stopSetTimeOut();
             return 2;
         };
     };
-    
+    console.log(result)
     let winnerResult = null;
     winnerResult = checkWinner(result);
 
@@ -134,8 +164,7 @@ export default function BoardGame ({mark, gameSelect}){
                 {INITIAL_BOARD.map((row, rowIndex) =>(
                     <div key={rowIndex} className="row-BoardGame">
                         {row.map((col, colIndex) =>(
-                            <div key={colIndex} className="cell-BoardGame" onClick={() =>  handleChoice(rowIndex, colIndex)}>
-                            {/* <div key={colIndex} className="cell-BoardGame" onClick={() => handleChoice(0, 2)}> */}
+                            <div key={colIndex} className="cell-BoardGame" onClick={() => handleAiPlayer(rowIndex, colIndex)}>
                                 {square[rowIndex][colIndex]}
                             </div>
                         ))}

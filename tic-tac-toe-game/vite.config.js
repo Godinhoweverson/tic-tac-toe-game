@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     allowedHosts: [
-      '5173-godinhoweve-tictactoega-l3stm32djmn.ws-eu118.gitpod.io', 
+      "5173-godinhoweve-tictactoega-71jng15ln7j.ws-eu118.gitpod.io", 
     ],
   },
 })
