@@ -2,7 +2,8 @@ import iconO from '../../assets/images/icon-o-yellow.svg';
 import iconx from '../../assets/images/icon-x-blue.svg';
 import { Link } from 'react-router-dom';
 
-export default function Winner({winner, onClick, nextRound, playerChoice}){
+export default function Winner({winner, onClick, nextRound, playerChoice, onRestart}){
+ 
     return(
         <div className="winner-container" style={nextRound ? { display: 'none' } : {}}>
             <div className="winner-sub-container">
@@ -12,8 +13,8 @@ export default function Winner({winner, onClick, nextRound, playerChoice}){
                     <h1 style={{color: winner === 0 ? 'var(--light-blue)' : winner === 1 ? 'var(--light-yellow)' : 'var(--silver)'}}>{winner === 0 || winner === 1 ? 'TAKES THE ROUND' : 'ROUND TIED'}</h1>
                 </div>
                 <div className='btns-winner'>
-                    <button className='btn-quit'>
-                    <Link to= {`/`}>
+                    <button className='btn-quit' onClick={onRestart}>
+                    <Link to= {`/`} >
                         QUIT
                     </Link>
                     </button>

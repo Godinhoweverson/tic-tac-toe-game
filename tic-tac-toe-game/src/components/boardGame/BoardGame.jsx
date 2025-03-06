@@ -13,6 +13,7 @@ import logo from '../../assets/images/logo.svg';
 import iconXSilver from '../../assets/images/icon-x-silver.svg';
 import iconOSilver from '../../assets/images/icon-o-silver.svg';
 import iconRestart from '../../assets/images/icon-restart.svg';
+import Score from "../scoreGame/ScoreGame.jsx";
 
 const INITIAL_BOARD = [
     [null,null,null],
@@ -42,7 +43,8 @@ export default function BoardGame ({mark, gameSelect}){
         return currentPlayer;
     }; 
 
-    function handleChoice(row, col){
+    function handleMultiplayer(row, col){
+        console.log(square)
         setNextRound(false);
         setResetGame(false);
 
@@ -66,32 +68,36 @@ export default function BoardGame ({mark, gameSelect}){
     }
 
     function handleAiPlayer(row, col) {
+        
+        setNextRound(false);
+        setResetGame(false);
+
+        let player = +mark;
+        let playerAI = +mark === 0 ? 1 : 0
+        console.log(square)
         setSquare((prevSquare) => {
-            let gameBoard = [...prevSquare];
-            gameBoard[row][col] = <img src={iconx} alt="mark" className="0" />; // Ensure className is a string
+
+            let gameBoard = null;
+            gameBoard = [...prevSquare];
+            gameBoard[row][col] = <img src={player === 0 ? iconx : iconO} alt="mark" className={player} />;
+
+            setResult((prevResult) =>({
+                ...prevResult,
+                [SETUP_DATA[row][col]]: player
+            }));
+
+            setWinner(player)
             return gameBoard;
-        });
+        })
     
-        // Ensure we check winner *after* updating state
-        setSquare((prevSquare) => {
-            const classNameValue = prevSquare[row][col]?.props?.className; // Access className safely
-    
-            if (prevSquare[row][col] !== null) {
-                setResult((prevResult) => ({
-                    ...prevResult,
-                    [SETUP_DATA[row][col]]: classNameValue, // Store className value
-                }));
-            }
-    
-            setWinner(classNameValue); // Store winner
-    
-            return prevSquare; // Maintain state
-        });
-    
+       
+
         if (gameSelect !== null) {
             timeOutRef.current = setTimeout(() => {
                 setSquare((prevSquare) => {
-                    let gameBoardCpu = [...prevSquare];
+
+                    let gameBoardCpu;
+                    gameBoardCpu = [...prevSquare];
     
                     let rowCpu, colCpu;
                     do {
@@ -99,13 +105,19 @@ export default function BoardGame ({mark, gameSelect}){
                         colCpu = Math.floor(Math.random() * 3);
                     } while (gameBoardCpu[rowCpu][colCpu] !== null);
     
-                    gameBoardCpu[rowCpu][colCpu] = <img src={iconO} alt="mark" className="1" />;
+                    gameBoardCpu[rowCpu][colCpu] = <img src={playerAI === 1 ? iconO : iconx} alt="mark" className={playerAI} />;
+                    setResult((prevResult) =>({
+                        ...prevResult,
+                        [SETUP_DATA[rowCpu][colCpu]]: playerAI
+                    }));
+                    setWinner(playerAI); 
                     return gameBoardCpu;
                 });
-            }, 2000);
+            }, 1000);
         }
-    }
 
+    }
+    
     function stopSetTimeOut(){
         clearTimeout(timeOutRef.current)
     }
@@ -127,16 +139,26 @@ export default function BoardGame ({mark, gameSelect}){
             return 2;
         };
     };
-    console.log(result)
+ 
     let winnerResult = null;
     winnerResult = checkWinner(result);
+  
 
     function handleNextRound(){
         setNextRound(true);
-        setSquare(INITIAL_BOARD);
+        setSquare( [
+            [null,null,null],
+            [null,null,null],
+            [null,null,null]
+        ]);
         setCurrentPlayer(0);
         setResult({});
         setWinner(null);
+        if(timeOutRef){
+            clearTimeout(timeOutRef.current);
+        }
+        
+        console.log('clicked')
     }
 
     function handleRestartGame(){
@@ -145,7 +167,13 @@ export default function BoardGame ({mark, gameSelect}){
         setCurrentPlayer(0);
         setResult({});
         setWinner(null);
+        if(timeOutRef){
+            clearTimeout(timeOutRef.current);
+        }
+        console.log('clicked')
     }
+
+    
 
     return(
         <>
@@ -164,7 +192,7 @@ export default function BoardGame ({mark, gameSelect}){
                 {INITIAL_BOARD.map((row, rowIndex) =>(
                     <div key={rowIndex} className="row-BoardGame">
                         {row.map((col, colIndex) =>(
-                            <div key={colIndex} className="cell-BoardGame" onClick={() => handleAiPlayer(rowIndex, colIndex)}>
+                            <div key={colIndex} className="cell-BoardGame" onClick={() => {gameSelect ? handleAiPlayer(rowIndex, colIndex) : handleMultiplayer(rowIndex, colIndex)}}>
                                 {square[rowIndex][colIndex]}
                             </div>
                         ))}
@@ -173,9 +201,9 @@ export default function BoardGame ({mark, gameSelect}){
             </section>
              <ScoreGame winner={winnerResult && winnerResult !== 2 ? winner : winnerResult === 2 ? 2 : null} resetGame={resetGame}/>
             {winnerResult !== 2 && winnerResult ?
-                                 <Winner winner={winner} onClick={handleNextRound} nextRound={nextRound} playerChoice={PLAYER1}/> :
+                                 <Winner winner={winner} onClick={handleNextRound} onRestart={handleRestartGame} nextRound={nextRound} playerChoice={PLAYER1}/> :
                                   winnerResult === 2 ?
-                                 <Winner winner={2} onClick={handleNextRound} nextRound={nextRound} playerChoice={PLAYER1}/> : null}
+                                 <Winner winner={2} onClick={handleNextRound} onRestart={handleRestartGame} nextRound={nextRound} playerChoice={PLAYER1}/> : null}
         </>
     )
 }
